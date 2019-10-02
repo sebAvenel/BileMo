@@ -17,7 +17,7 @@ class ClientFixtures extends Fixture
             $password = 'password' . $this->clients[$i];
             $client
                 ->setName($this->clients[$i])
-                ->setPassword(password_hash($password, PASSWORD_DEFAULT))
+                ->setPassword(password_hash($password, PASSWORD_ARGON2I))
                 ->setRoles(['ROLE_ADMIN']);
 
             $manager->persist($client);
