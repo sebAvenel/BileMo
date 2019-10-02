@@ -38,7 +38,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $data = $this->serializer->serialize($product, 'json');
+        $data = $this->serializer->serialize($product, 'json', ['groups' => ['show']]);
         return new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
@@ -56,7 +56,7 @@ class ProductController extends Controller
             $page = 1;
         }
         $products = $this->repository->findProducts($page, $_ENV['LIMIT']);
-        $data = $this->serializer->serialize($products, 'json');
+        $data = $this->serializer->serialize($products, 'json', ['groups' => ['list']]);
 
         return new Response($data, 200, [
             'Content-type' => 'application/json'
