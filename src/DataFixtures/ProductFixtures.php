@@ -13,8 +13,6 @@ class ProductFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        // $product = new Product();
-        // $manager->persist($product);
         for($i = 1; $i <= 20; $i++) {
             $product = new Product();
             $productName = $this->name[rand(0, count($this->name)-1)];

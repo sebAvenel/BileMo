@@ -21,7 +21,7 @@ class UserFixtures extends Fixture
                 ->setAddress($faker->address)
                 ->setEmail($faker->email)
                 ->setPhone('0' . rand(1,9) . rand(10000000, 99999999))
-                ->setClients($this->getReference('client-' . rand(0, 2)));
+                ->setClient($this->getReference('client-' . rand(0, 2)));
             $manager->persist($user);
         }
 

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -13,31 +15,42 @@ class User
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"list", "show"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "show"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3", max="50")
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "show"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3", max="50")
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"show"})
+     * @Assert\Email(checkMX = true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"show"})
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"show"})
      */
     private $address;
 
@@ -45,7 +58,7 @@ class User
      * @ORM\ManyToOne(targetEntity="App\Entity\Client", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $clients;
+    private $client;
 
     public function getId(): ?int
     {
@@ -112,14 +125,14 @@ class User
         return $this;
     }
 
-    public function getClients(): ?Client
+    public function getClient(): ?Client
     {
-        return $this->clients;
+        return $this->client;
     }
 
-    public function setClients(?Client $clients): self
+    public function setClient(?Client $client): self
     {
-        $this->clients = $clients;
+        $this->client = $client;
 
         return $this;
     }
