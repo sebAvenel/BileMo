@@ -36,7 +36,7 @@ class Client implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="clients", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="client", orphanRemoval=true)
      */
     private $users;
 
@@ -135,7 +135,7 @@ class Client implements UserInterface
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
-            $user->setClients($this);
+            $user->setClient($this);
         }
 
         return $this;
@@ -146,8 +146,8 @@ class Client implements UserInterface
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             // set the owning side to null (unless already changed)
-            if ($user->getClients() === $this) {
-                $user->setClients(null);
+            if ($user->getClient() === $this) {
+                $user->setClient(null);
             }
         }
 
