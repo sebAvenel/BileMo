@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -54,11 +55,16 @@ class ProductController extends Controller
     /**
      * @Route("/products", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @param Request $request
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = $this->repository->findAll();
+        $page = $request->query->get('page');
+        if(is_null($page) || $page < 1) {
+            $page = 1;
+        }
+        $products = $this->repository->findProducts($page, $_SERVER['LIMIT']);
         $data = $this->serializer->serialize($products, 'json', ['groups' => ['list']]);
 
         return new Response($data, 200, [

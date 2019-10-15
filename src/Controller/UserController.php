@@ -69,9 +69,14 @@ class UserController extends Controller
      * @return Response
      * @throws AnnotationException
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->repository->findBy(['client' => $this->getUser()]);
+        $page = $request->query->get('page');
+        if(is_null($page) || $page < 1) {
+            $page = 1;
+        }
+        $limit = $_SERVER['LIMIT'];
+        $users = $this->repository->findBy(['client' => $this->getUser()], null, $limit,($page - 1) * $limit);
         $serializer = $this->userSerializer();
         $data = $serializer->serialize($users, 'json', [
             'groups' => ['list']
@@ -89,7 +94,7 @@ class UserController extends Controller
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @IsGranted("ROLE_CLIENT")
-     * @return JsonResponse
+     * @return JsonResponse|Response
      */
     public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
@@ -134,13 +139,5 @@ class UserController extends Controller
         }
 
         throw new ErrorException("Vous ne pouvez pas supprimer cet utilisateur");
-    }
-
-    /**
-     * @Route("/verify")
-     */
-    public function verifyGetUser()
-    {
-        dump($this->getUser());
     }
 }
