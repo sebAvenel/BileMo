@@ -39,17 +39,20 @@ class ProductController extends Controller
 
     /**
      * @param Product $product
+     * @param Request $request
+     * @return Response
      * @Route("/product/{id}", methods={"GET"})
      * @IsGranted("ROLE_USER")
-     * @return Response
      */
-    public function show(Product $product)
+    public function show(Product $product, Request $request)
     {
         $data = $this->serializer->serialize($product, 'json', ['groups' => ['show']]);
-
-        return new Response($data, 200, [
-            'Content-Type' => 'application/json'
+        $response = new Response($data, 200, [
+            'Content-type' =>'application/json'
         ]);
+        $this->makeCache($response, 60, $request);
+
+        return $response;
     }
 
     /**
@@ -66,9 +69,11 @@ class ProductController extends Controller
         }
         $products = $this->repository->findProducts($page, $_SERVER['LIMIT']);
         $data = $this->serializer->serialize($products, 'json', ['groups' => ['list']]);
-
-        return new Response($data, 200, [
+        $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
+        $this->makeCache($response, 60, $request);
+
+        return $response;
     }
 }
