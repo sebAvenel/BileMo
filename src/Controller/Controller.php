@@ -7,6 +7,8 @@ namespace App\Controller;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
@@ -21,7 +23,7 @@ class Controller extends AbstractController
      * @return Serializer
      * @throws AnnotationException
      */
-    public function userSerializer()
+    public function userSerializer() : Serializer
     {
         $encoder = new JsonEncoder();
         $defaultContext = [
@@ -34,5 +36,25 @@ class Controller extends AbstractController
         $userSerializer = new Serializer([$normalizer], [$encoder]);
 
         return $userSerializer;
+    }
+
+    /**
+     * @param Response $response
+     * @param int $time
+     * @param Request $request
+     * @return Response
+     */
+    public function makeCache(Response $response, int $time, ?Request $request = null) : Response
+    {
+        $response->setSharedMaxAge($time);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        // Validation
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+        // Pour vérifier que la validation fonctionne (304 = non modifiée, 200 = modification)
+        // dump($response->getStatusCode());
+
+        return $response;
     }
 }

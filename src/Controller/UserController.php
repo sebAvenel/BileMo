@@ -40,24 +40,26 @@ class UserController extends Controller
 
     /**
      * @param User $user
-     * @param ValidatorInterface $validator
-     * @IsGranted("ROLE_USER")
+     * @param Request $request
      * @return Response
      * @throws AnnotationException
      * @throws ErrorException
+     * @IsGranted("ROLE_USER")
      * @Route("/user/{id}", methods={"GET"})
      */
-    public function show(User $user, ValidatorInterface $validator)
+    public function show(User $user, Request $request)
     {
         if ($user->getClient() == $this->getUser()) {
             $serializer = $this->userSerializer();
             $data = $serializer->serialize($user, 'json', [
                 'groups' => ['show']
             ]);
-
-            return new Response($data, 200, [
+            $response = new Response($data, 200, [
                 'Content-Type' => 'application/json'
             ]);
+            $this->makeCache($response, 60, $request);
+
+            return $response;
         }
 
         throw new ErrorException("Vous ne pouvez pas accéder à cet utilisateur");
@@ -81,10 +83,13 @@ class UserController extends Controller
         $data = $serializer->serialize($users, 'json', [
             'groups' => ['list']
         ]);
-
-        return new Response($data, 200, [
+        $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
+        $this->makeCache($response, 60, $request);
+
+        return $response;
+
     }
 
     /**
