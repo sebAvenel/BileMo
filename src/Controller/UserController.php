@@ -5,6 +5,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Swagger\Annotations as SWG;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
@@ -41,12 +44,22 @@ class UserController extends Controller
     /**
      * @param User $user
      * @param Request $request
+     * @IsGranted("ROLE_USER")
+     * @Route("/user/{id}", methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Retourne le détail d'un utilisateur",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"show"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
      * @return Response
      * @throws AnnotationException
      * @throws ErrorException
-     * @IsGranted("ROLE_USER")
-     * @Route("/user/{id}", methods={"GET"})
      */
+
     public function show(User $user, Request $request)
     {
         if ($user->getClient() == $this->getUser()) {
@@ -57,7 +70,7 @@ class UserController extends Controller
             $response = new Response($data, 200, [
                 'Content-Type' => 'application/json'
             ]);
-            $this->makeCache($response, 60, $request);
+            $this->httpCaching($response, 60, $request);
 
             return $response;
         }
@@ -68,6 +81,15 @@ class UserController extends Controller
     /**
      * @Route("/users", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Retourne la liste des utilisateurs",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"list"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
      * @return Response
      * @throws AnnotationException
      */
@@ -86,7 +108,7 @@ class UserController extends Controller
         $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
-        $this->makeCache($response, 60, $request);
+        $this->httpCaching($response, 60, $request);
 
         return $response;
 
@@ -99,6 +121,15 @@ class UserController extends Controller
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @IsGranted("ROLE_CLIENT")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Ajouter un utilisateur",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"show"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
      * @return JsonResponse|Response
      */
     public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator)
@@ -127,6 +158,15 @@ class UserController extends Controller
      * @param EntityManagerInterface $entityManager
      * @Route("/user/delete/{id}", methods={"DELETE"})
      * @IsGranted("ROLE_CLIENT")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Supprimer un utilisateur",
+     *     @SWG\Schema(
+     *         type="int",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"show"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
      * @return Response
      * @throws ErrorException
      */

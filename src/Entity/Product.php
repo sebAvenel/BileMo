@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Swagger\Annotations as SWG;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
@@ -15,36 +16,48 @@ class Product
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @Groups({"list", "show"})
+     * @SWG\Property(description="The unique identifier of the product.")
+     * @SWG\Property(type="integer")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"list", "show"})
+     * @SWG\Property(description="The name of the product.")
+     * @SWG\Property(type="string")
      */
     private $name;
 
     /**
      * @ORM\Column(type="decimal", precision=7, scale=2)
      * @Groups({"show"})
+     * @SWG\Property(description="The price of the product.")
+     * @SWG\Property(type="decimal")
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"show"})
+     * @SWG\Property(description="The firstname of the product.")
+     * @SWG\Property(type="string")
      */
     private $brand;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"show"})
+     * @SWG\Property(description="The description of the product.")
+     * @SWG\Property(type="string")
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"show"})
+     * @SWG\Property(description="The color of the product.")
+     * @SWG\Property(type="string")
      */
     private $color;
 

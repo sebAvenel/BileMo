@@ -11,6 +11,9 @@ security:
                 class: App\Entity\Client
                 property: name
     firewalls:
+        dev:
+          pattern: ^/(_(profiler|wdt)|css|images|js)/
+          security: false
 
         login:
             pattern:  ^/api/login
@@ -24,6 +27,7 @@ security:
         api:
             pattern:   ^/api
             stateless: true
+            anonymous: true
             guard:
                 authenticators:
                 - lexik_jwt_authentication.jwt_token_authenticator
@@ -40,4 +44,10 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/product, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/products, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user/add, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/user/delete, roles: IS_AUTHENTICATED_FULLY }
+        #- { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
