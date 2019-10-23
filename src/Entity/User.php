@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -16,6 +18,8 @@ class User
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @Groups({"list", "show"})
+     * @SWG\Property(description="The unique identifier of the user.")
+     * @SWG\Property(type="integer")
      */
     private $id;
 
@@ -24,6 +28,8 @@ class User
      * @Groups({"list", "show"})
      * @Assert\NotBlank()
      * @Assert\Length(min="3", max="50")
+     * @SWG\Property(description="The firstname of the user.")
+     * @SWG\Property(type="string")
      */
     private $firstName;
 
@@ -32,6 +38,8 @@ class User
      * @Groups({"list", "show"})
      * @Assert\NotBlank()
      * @Assert\Length(min="3", max="50")
+     * @SWG\Property(description="The lastname of the user.")
+     * @SWG\Property(type="string")
      */
     private $lastName;
 
@@ -39,24 +47,31 @@ class User
      * @ORM\Column(type="string", length=255)
      * @Groups({"show"})
      * @Assert\Email(checkMX = true)
+     * @SWG\Property(description="The email of the user.")
+     * @SWG\Property(type="string")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"show"})
+     * @SWG\Property(description="The phone of the user.")
+     * @SWG\Property(type="string")
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"show"})
+     * @SWG\Property(description="The address of the user.")
+     * @SWG\Property(type="string")
      */
     private $address;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Client", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
+     * @SWG\Property(ref=@Model(type=Client::class))
      */
     private $client;
 

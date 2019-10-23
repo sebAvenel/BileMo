@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-
 /**
  * Class ProductController
  * @package App\Controller
@@ -40,9 +41,17 @@ class ProductController extends Controller
     /**
      * @param Product $product
      * @param Request $request
-     * @return Response
      * @Route("/product/{id}", methods={"GET"})
-     * @IsGranted("ROLE_USER")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Retourne le détail d'un produit",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Product::class, groups={"show"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
+     * @return Response
      */
     public function show(Product $product, Request $request)
     {
@@ -50,15 +59,23 @@ class ProductController extends Controller
         $response = new Response($data, 200, [
             'Content-type' =>'application/json'
         ]);
-        $this->makeCache($response, 60, $request);
+        $this->httpCaching($response, 60, $request);
 
         return $response;
     }
 
     /**
      * @Route("/products", methods={"GET"})
-     * @IsGranted("ROLE_USER")
      * @param Request $request
+     * @SWG\Response(
+     *     response=200,
+     *     description="Retourne la liste des produits",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Product::class, groups={"list"}))
+     *     )
+     * )
+     * @Security(name="Bearer")
      * @return Response
      */
     public function index(Request $request)
@@ -72,7 +89,7 @@ class ProductController extends Controller
         $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
-        $this->makeCache($response, 60, $request);
+        $this->httpCaching($response, 60, $request);
 
         return $response;
     }

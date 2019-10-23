@@ -44,7 +44,7 @@ class Controller extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function makeCache(Response $response, int $time, ?Request $request = null) : Response
+    public function httpCaching(Response $response, int $time, ?Request $request = null) : Response
     {
         $response->setSharedMaxAge($time);
         $response->headers->addCacheControlDirective('must-revalidate', true);
