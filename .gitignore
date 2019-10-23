@@ -1,3 +1,5 @@
+src/Migrations*
+.env
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -16,5 +18,3 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-src/Migrations*
-.env
