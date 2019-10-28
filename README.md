@@ -63,6 +63,20 @@ Php ainsi que Composer doivent être installés sur votre ordinateur afin de pou
     php bin/console doctrine:fixtures:load
     ```
     
+* Génération des clés d'authentification JWT:
+
+    ```bash
+    mkdir -p config/jwt (si la syntaxe n'est correcte : mkdir -p config\jwt) 
+    ```
+    
+    ```bash
+    openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+    ```
+    
+    ```bash
+    openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout 
+    ```  
+    
 * Démarrage du serveur de symfony:
   
     ```bash
