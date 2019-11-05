@@ -140,6 +140,10 @@ Php ainsi que Composer doivent être installés sur votre ordinateur afin de pou
     ```bash
     curl -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/user/delete/102
     ```
+## Documentation Technique
+
+ * http://localhost:8000/api/doc
+
 ## Outils utilisés
 
   * [Symfony](https://symfony.com/)
