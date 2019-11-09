@@ -3,13 +3,34 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation as Serializer;
+
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_user_show",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"show", "list"})
+ * )
+ *
+ * @Hateoas\Relation(
+ *      "list",
+ *      href = @Hateoas\Route(
+ *          "app_user_index",
+ *          absolute = true
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"show"})
+ * )
  */
 class User
 {
@@ -17,7 +38,7 @@ class User
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"list", "show"})
+     * @Serializer\Groups({"list", "show"})
      * @SWG\Property(description="The unique identifier of the user.")
      * @SWG\Property(type="integer")
      */
@@ -25,7 +46,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list", "show"})
+     * @Serializer\Groups({"list", "show"})
      * @Assert\NotBlank()
      * @Assert\Length(min="3", max="50")
      * @SWG\Property(description="The firstname of the user.")
@@ -35,7 +56,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list", "show"})
+     * @Serializer\Groups({"list", "show"})
      * @Assert\NotBlank()
      * @Assert\Length(min="3", max="50")
      * @SWG\Property(description="The lastname of the user.")
@@ -45,7 +66,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show"})
+     * @Serializer\Groups({"show"})
      * @Assert\Email(checkMX = true)
      * @SWG\Property(description="The email of the user.")
      * @SWG\Property(type="string")
@@ -54,7 +75,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show"})
+     * @Serializer\Groups({"show"})
      * @SWG\Property(description="The phone of the user.")
      * @SWG\Property(type="string")
      */
@@ -62,7 +83,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show"})
+     * @Serializer\Groups({"show"})
      * @SWG\Property(description="The address of the user.")
      * @SWG\Property(type="string")
      */
