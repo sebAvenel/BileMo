@@ -4,13 +4,16 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 /**
  * Class ProductController
  * @package App\Controller
@@ -55,7 +58,7 @@ class ProductController extends Controller
      */
     public function show(Product $product, Request $request)
     {
-        $data = $this->serializer->serialize($product, 'json', ['groups' => ['show']]);
+        $data = $this->serializer->serialize($product, 'json', SerializationContext::create()->setGroups(array('show')));
         $response = new Response($data, 200, [
             'Content-type' =>'application/json'
         ]);
@@ -84,8 +87,18 @@ class ProductController extends Controller
         if(is_null($page) || $page < 1) {
             $page = 1;
         }
-        $products = $this->repository->findProducts($page, $_SERVER['LIMIT']);
-        $data = $this->serializer->serialize($products, 'json', ['groups' => ['list']]);
+
+        // Use pagerfanta
+        $datas = $this->repository->findAll();
+        $adapter = new ArrayAdapter($datas);
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage(5);
+        $pagerfanta->setCurrentPage($page);
+
+        // Use repository
+        //$products = $this->repository->findProducts($page, 5);
+
+        $data = $this->serializer->serialize($pagerfanta->getCurrentPageResults(), 'json', SerializationContext::create()->setGroups(array('list')));
         $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);

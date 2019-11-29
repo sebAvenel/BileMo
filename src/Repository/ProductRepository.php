@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -25,8 +24,9 @@ class ProductRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('p')
             ->getQuery()
             ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
-        return new Paginator($query);
+            ->setMaxResults($limit)
+            ->getResult();
+        return $query;
     }
 
     // /**

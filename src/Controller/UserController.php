@@ -5,10 +5,11 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
-use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -16,8 +17,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * Class UserController
@@ -44,6 +46,8 @@ class UserController extends Controller
     /**
      * @param User $user
      * @param Request $request
+     * @return Response
+     * @throws ErrorException
      * @IsGranted("ROLE_USER")
      * @Route("/user/{id}", methods={"GET"})
      * @SWG\Response(
@@ -55,22 +59,16 @@ class UserController extends Controller
      *     )
      * )
      * @Security(name="Bearer")
-     * @return Response
-     * @throws AnnotationException
-     * @throws ErrorException
      */
 
     public function show(User $user, Request $request)
     {
         if ($user->getClient() == $this->getUser()) {
-            $serializer = $this->userSerializer();
-            $data = $serializer->serialize($user, 'json', [
-                'groups' => ['show']
-            ]);
+            $data = $this->serializer->serialize($user, 'json', SerializationContext::create()->setGroups(array('show')));
             $response = new Response($data, 200, [
                 'Content-Type' => 'application/json'
             ]);
-            $this->httpCaching($response, 60, $request);
+            //$this->httpCaching($response, 60, $request);
 
             return $response;
         }
@@ -90,8 +88,8 @@ class UserController extends Controller
      *     )
      * )
      * @Security(name="Bearer")
+     * @param Request $request
      * @return Response
-     * @throws AnnotationException
      */
     public function index(Request $request)
     {
@@ -99,16 +97,18 @@ class UserController extends Controller
         if(is_null($page) || $page < 1) {
             $page = 1;
         }
-        $limit = $_SERVER['LIMIT'];
-        $users = $this->repository->findBy(['client' => $this->getUser()], null, $limit,($page - 1) * $limit);
-        $serializer = $this->userSerializer();
-        $data = $serializer->serialize($users, 'json', [
-            'groups' => ['list']
-        ]);
+
+        $datas = $this->repository->findBy(['client' => $this->getUser()]);
+        $adapter = new ArrayAdapter($datas);
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage(5);
+        $pagerfanta->setCurrentPage($page);
+
+        $data = $this->serializer->serialize($pagerfanta->getCurrentPageResults(), 'json', SerializationContext::create()->setGroups(array('list')));
         $response = new Response($data, 200, [
             'Content-Type' => 'application/json'
         ]);
-        $this->httpCaching($response, 60, $request);
+        //$this->httpCaching($response, 60, $request);
 
         return $response;
 

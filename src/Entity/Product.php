@@ -3,11 +3,32 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Swagger\Annotations as SWG;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "app_product_show",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"list", "show"})
+ * )
+ *
+ * @Hateoas\Relation(
+ *      "list",
+ *      href = @Hateoas\Route(
+ *          "app_product_index",
+ *          absolute = true
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"show"})
+ * )
+ *
  */
 class Product
 {
@@ -15,49 +36,49 @@ class Product
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"list", "show"})
      * @SWG\Property(description="The unique identifier of the product.")
      * @SWG\Property(type="integer")
+     * @Serializer\Groups({"list", "show"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list", "show"})
      * @SWG\Property(description="The name of the product.")
      * @SWG\Property(type="string")
+     * @Serializer\Groups({"list", "show"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="decimal", precision=7, scale=2)
-     * @Groups({"show"})
      * @SWG\Property(description="The price of the product.")
      * @SWG\Property(type="decimal")
+     * @Serializer\Groups({"show"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show"})
      * @SWG\Property(description="The firstname of the product.")
      * @SWG\Property(type="string")
+     * @Serializer\Groups({"show"})
      */
     private $brand;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"show"})
      * @SWG\Property(description="The description of the product.")
      * @SWG\Property(type="string")
+     * @Serializer\Groups({"show"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show"})
      * @SWG\Property(description="The color of the product.")
      * @SWG\Property(type="string")
+     * @Serializer\Groups({"show"})
      */
     private $color;
 
